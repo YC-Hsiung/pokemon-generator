@@ -8,16 +8,8 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 def loadpm():
+    pmimg=[]
     idx=1
-    idx=str(idx)
-    imgpath='pics/type/grass/40x40/poke'+idx+'.jpg'
-    try:
-        pmimg=plt.imread(imgpath)
-        pmimg=pmimg.reshape(1,pmimg.shape[0], pmimg.shape[1], 3)
-    except:
-        return
-    idx=int(idx)
-    idx+=1
     while True:
         idx=str(idx)
         imgpath='pics/type/grass/40x40/poke'+idx+'.jpg'
@@ -26,7 +18,10 @@ def loadpm():
             img=plt.imread(imgpath)
         except:
             break
-        pmimg =np.vstack((pmimg,img.reshape(1,img.shape[0], img.shape[1], 3)))
+        if(idx=='1'):
+            pmimg=img.reshape(1,img.shape[0], img.shape[1], 3)
+        else:
+            pmimg =np.vstack((pmimg,img.reshape(1,img.shape[0], img.shape[1], 3)))
         idx=int(idx)
         idx+=1
     return pmimg
