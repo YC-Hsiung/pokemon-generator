@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[11]:
 
 
 from PIL import Image
@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 def loadpm():
     idx=1
     idx=str(idx)
-    imgpath='pics/type/dragon/40x40/poke'+idx+'.jpg'
+    imgpath='pics/type/grass/40x40/poke'+idx+'.jpg'
     try:
         pmimg=plt.imread(imgpath)
         pmimg=pmimg.reshape(1,pmimg.shape[0], pmimg.shape[1], 3)
@@ -20,7 +20,7 @@ def loadpm():
     idx+=1
     while True:
         idx=str(idx)
-        imgpath='pics/type/dragon/40x40/poke'+idx+'.jpg'
+        imgpath='pics/type/grass/40x40/poke'+idx+'.jpg'
         
         try:
             img=plt.imread(imgpath)
@@ -32,7 +32,7 @@ def loadpm():
     return pmimg
 
 
-# In[2]:
+# In[12]:
 
 
 pokemon=loadpm()
@@ -81,7 +81,7 @@ class GradNorm(Layer):
         return (input_shapes[1][0], 1)
 
 
-# In[4]:
+# In[16]:
 
 
 class Generator():
@@ -90,24 +90,22 @@ class Generator():
         element=1
         for i in output_size:
             element*=i
-        
-        self.network.add(Dense(element//16,input_dim=gen_dim,activation='relu'))
-        self.network.add(Dense(element//4,activation='relu'))
-        self.network.add(Dense(element//4,activation='relu'))
-        self.network.add(Dense(element//1,activation='tanh'))
-        self.network.add(Reshape(output_size))
-        #self.network.add(BatchNormalization(momentum=0.8))
-        #self.network.add(LeakyReLU(0.2))
-        
-        '''
-        self.network.add(Conv2DTranspose(filters=256,kernel_size=(3,3),strides=1,padding='same',activation='relu'))
-        #self.network.add(BatchNormalization(momentum=0.8))
-        #self.network.add(LeakyReLU(0.2))
-        self.network.add(Conv2DTranspose(filters=256,kernel_size=(3,3),strides=1,padding='same',activation='relu'))
-        #self.network.add(BatchNormalization(momentum=0.8))
-        #self.network.add(LeakyReLU(0.2))
-        self.network.add(Conv2DTranspose(filters=3,kernel_size=(5,5),padding='same',activation='tanh'))
-        '''
+            
+        IsDense=False
+        if(IsDense):
+        #Dense
+            self.network.add(Dense(element//16,input_dim=gen_dim,activation='relu'))
+            self.network.add(Dense(element//4,activation='relu'))
+            self.network.add(Dense(element//4,activation='relu'))
+            self.network.add(Dense(element//1,activation='tanh'))
+            self.network.add(Reshape(output_size))
+        else:
+        #Convolution
+            self.network.add(Dense(element//16*256,input_dim=gen_dim,activation='relu'))
+            self.network.add(Reshape((output_size[0]//4,output_size[1]//4,output_size[2]*256)))
+            self.network.add(Conv2DTranspose(filters=256,kernel_size=(3,3),strides=2,padding='same',activation='relu'))  
+            self.network.add(Conv2DTranspose(filters=256,kernel_size=(3,3),strides=2,padding='same',activation='relu'))
+            self.network.add(Conv2DTranspose(filters=3,kernel_size=(5,5),padding='same',activation='tanh'))
         self.network.summary()
 class Discriminator():
     #Critic
@@ -208,17 +206,17 @@ class GAN():
                     
 
 
-# In[5]:
+# In[ ]:
 
 
-gan=GAN(pokemon,30)
-#gan.train(20000)
+gan=GAN(pokemon,20)
+gan.train(20000)
 
 
 # In[6]:
 
 
-
+'''
 import numpy as np
 from IPython.core.debugger import Tracer
 from keras.layers.advanced_activations import LeakyReLU
@@ -234,107 +232,4 @@ def wasserstein_loss(y_true, y_pred):
 gan=load_model('eevee2_model.h5', custom_objects={'wasserstein_loss': wasserstein_loss})
 #gan.summary()
 generator=gan.layers[1]
-
-
-# In[7]:
-
-
-from keras.layers import Input
-from ipywidgets import FloatSlider
-x1=x2=x3=x4=x5=x6=x7=x8=x9=x10=x11=x12=x13=x14=x15=x16=x17=x18=x19=x20=x21=x22=x23=x24=x25=x26=x27=x28=x29=x30=0
-def showimg(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25):
-    input_vector=np.array([x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25])
-    input_vector=np.expand_dims(input_vector[0:15],axis=0)
-    img=generator.predict(input_vector)
-    img=np.reshape(img,(52,52,3))
-    img=(img+1)*127.5
-    plt.imshow(img.astype(np.uint8))
-    plt.axis('off')
-
-
-x1=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x2=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x3=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x4=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x5=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x6=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x7=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x8=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x9=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x10=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x11=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x12=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x13=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x14=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x15=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x16=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x17=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x18=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x19=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x20=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x21=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x22=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x23=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x24=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x25=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x26=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x27=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x28=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x29=FloatSlider(min=-5.0, max=5.0, step=0.01)
-x30=FloatSlider(min=-5.0, max=5.0, step=0.01)
-w=[x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25]
-from ipywidgets import Layout, Button, Box,VBox,HBox,interactive_output
-boxes=[]
-for i in range(7):
-    j=4*i+4
-    if j>25:
-        boxes.append(w[24])
-    else:
-        boxes.append(Box(w[j-4:j]))
-ui=boxes[0]
-for i in range(1,7):
-    ui=VBox([ui,boxes[i]])
-
-        #Box(children=w.children[j-4:j],layout=Layout(display='flex',flex_flow='row',align_items='stretch',border='solid',width='100%'))
-
-out=interactive_output(showimg,{'x1':x1
-,'x2':x2
-,'x3':x3
-,'x4':x4
-,'x5':x5
-,'x6':x6
-,'x7':x7
-,'x8':x8
-,'x9':x9
-,'x10':x10
-,'x11':x11
-,'x12':x12
-,'x13':x13
-,'x14':x14
-,'x15':x15
-,'x16':x16
-,'x17':x17
-,'x18':x18
-,'x19':x19
-,'x20':x20
-,'x21':x21
-,'x22':x22
-,'x23':x23
-,'x24':x24
-,'x25':x25})
-display(ui,out)
-
-
-
-# In[75]:
-
-
-for i in range(1,31):
-    print("HBox"%(i))
-
-
-# In[ ]:
-
-
-
-
+'''
